@@ -1,0 +1,210 @@
+CREATE TABLE SALESPEOPLE_07(
+	SNUM VARCHAR2(5) PRIMARY KEY,
+	SNAME VARCHAR2(15),
+	CITY VARCHAR2(20),
+	COMM NUMBER(4));
+SQL> DESC SALESPEOPLE_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ SNUM                                      NOT NULL VARCHAR2(5)
+ SNAME                                              VARCHAR2(15)
+ CITY                                               VARCHAR2(20)
+ COMM                                               NUMBER(4)
+
+
+INSERT INTO SALESPEOPLE_07 VALUES('S1001', 'Ayush', 'Kolkata', 200);
+INSERT INTO SALESPEOPLE_07 VALUES('S1002', 'Sreyansh', 'Howrah', 500);
+INSERT INTO SALESPEOPLE_07 VALUES('S1003', 'Ankit', 'Howrah', 350);
+INSERT INTO SALESPEOPLE_07 VALUES('S1004', 'Anushka', 'Kolkata', 450);
+INSERT INTO SALESPEOPLE_07 VALUES('S1005', 'Ankur', 'Kolkata', 400);
+
+SQL> SELECT * FROM SALESPEOPLE_07;
+
+SNUM  SNAME           CITY                       COMM
+----- --------------- -------------------- ----------
+S1001 Ayush           Kolkata                     200
+S1002 Sreyansh        Howrah                      500
+S1003 Ankit           Howrah                      350
+S1004 Anushka         Kolkata                     450
+S1005 Ankur           Kolkata                     400
+
+
+
+CREATE TABLE CUSTOMER_07(
+	CNUM VARCHAR2(5) PRIMARY KEY,
+	CNAME VARCHAR2(15),
+	CITY VARCHAR2(20),
+	RATING NUMBER(2),
+	SNUM VARCHAR2(5) REFERENCES SALESPEOPLE_07(SNUM));
+SQL> DESC CUSTOMER_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CNUM                                      NOT NULL VARCHAR2(5)
+ CNAME                                              VARCHAR2(15)
+ CITY                                               VARCHAR2(20)
+ RATING                                             NUMBER(2)
+ SNUM                                               VARCHAR2(5)
+
+
+INSERT INTO CUSTOMER_07 VALUES('C1001', 'Mayukh', 'Kolkata', 10, 'S1003');
+INSERT INTO CUSTOMER_07 VALUES('C1002', 'Iman', 'Asansol', 9, 'S1003');
+INSERT INTO CUSTOMER_07 VALUES('C1003', 'Souvagya', 'Kolkata', 9, 'S1001');
+INSERT INTO CUSTOMER_07 VALUES('C1004', 'Aratrika', 'Kolkata', 9, 'S1004');
+INSERT INTO CUSTOMER_07 VALUES('C1005', 'Rupayan', 'Kolkata', 9, 'S1005');
+
+SQL> SELECT * FROM CUSTOMER_07;
+
+CNUM  CNAME           CITY                     RATING SNUM
+----- --------------- -------------------- ---------- -----
+C1001 Mayukh          Kolkata                      10 S1003
+C1002 Iman            Asansol                       9 S1003
+C1003 Souvagya        Kolkata                       9 S1001
+C1004 Aratrika        Kolkata                       9 S1004
+C1005 Rupayan         Kolkata                       9 S1005
+
+
+
+CREATE TABLE ORDERS_07(
+	ONUM VARCHAR2(5) PRIMARY KEY,
+	AMT NUMBER(4),
+	ODATE DATE,
+	CNUM VARCHAR2(5) REFERENCES CUSTOMER_07(CNUM),
+	SNUM VARCHAR2(5) REFERENCES SALESPEOPLE_07(SNUM));
+SQL> DESC ORDERS_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ONUM                                      NOT NULL VARCHAR2(5)
+ AMT                                                NUMBER(4)
+ ODATE                                              DATE
+ CNUM                                               VARCHAR2(5)
+ SNUM                                               VARCHAR2(5)
+
+
+INSERT INTO ORDERS_07 VALUES('O1001', 1200, '06-Apr-25', 'C1001', 'S1003');
+INSERT INTO ORDERS_07 VALUES('O1002', 1350, '04-Apr-25', 'C1002', 'S1003');
+INSERT INTO ORDERS_07 VALUES('O1003', 890, '02-Apr-25', 'C1003', 'S1001');
+INSERT INTO ORDERS_07 VALUES('O1004', 200, '07-Apr-25', 'C1004', 'S1004');
+INSERT INTO ORDERS_07 VALUES('O1005', 2200, '09-Apr-25', 'C1005', 'S1005');
+
+SQL> SELECT * FROM ORDERS_07;
+
+ONUM         AMT ODATE     CNUM  SNUM
+----- ---------- --------- ----- -----
+O1001       1200 06-APR-25 C1001 S1003
+O1002       1350 04-APR-25 C1002 S1003
+O1003        890 02-APR-25 C1003 S1001
+O1004        200 07-APR-25 C1004 S1004
+O1005       2200 09-APR-25 C1005 S1005
+
+
+a))
+CREATE VIEW V1 AS (
+	SELECT * FROM CUSTOMER_07
+	WHERE RATING = (SELECT MAX(RATING) FROM CUSTOMER_07)
+);
+SELECT * FROM V1;
+
+SQL> SELECT * FROM V1;
+
+CNUM  CNAME           CITY                     RATING SNUM
+----- --------------- -------------------- ---------- -----
+C1001 Mayukh          Kolkata                      10 S1003
+
+
+
+b))
+CREATE VIEW V2 AS(
+	SELECT COUNT(SNUM) NO_OF_SALESPEOPLE, CITY
+	FROM SALESPEOPLE_07 GROUP BY CITY
+);
+
+SQL> SELECT * FROM V2;
+
+NO_OF_SALESPEOPLE CITY
+----------------- --------------------
+                3 Kolkata
+                2 Howrah
+
+
+c))
+CREATE VIEW V3 AS(
+	SELECT S.SNUM, AVG(O.AMT) "AVERAGE ORDERS", SUM(O.AMT) "TOTAL ORDERS"
+	FROM SALESPEOPLE_07 S
+	LEFT JOIN ORDERS_07 O
+	ON S.SNUM = O.SNUM
+	GROUP BY S.SNUM
+);
+
+SQL> SELECT * FROM V3;
+
+SNUM  AVERAGE ORDERS TOTAL ORDERS
+----- -------------- ------------
+S1001            890          890
+S1002
+S1003           1275         2550
+S1004            200          200
+S1005           2200         2200
+
+
+
+d))
+CREATE VIEW V4 AS(
+	SELECT SNUM, COUNT(CNUM) NO_OF_CUSTOMERS FROM CUSTOMER_07
+	GROUP BY SNUM
+	HAVING COUNT(CNUM) > 1
+);
+
+SQL> SELECT * FROM V4;
+
+SNUM  NO_OF_CUSTOMERS
+----- ---------------
+S1003               2
+
+
+3)
+CREATE VIEW SALESPEOPLE_CUSTOMER_ORDERS_07 AS(
+	SELECT S.SNAME, C.CNAME, O.ONUM
+	FROM SALESPEOPLE_07 S, CUSTOMER_07 C, ORDERS_07 O
+	WHERE S.SNUM = O.SNUM AND C.CNUM = O.CNUM
+);
+
+SQL> SELECT * FROM SALESPEOPLE_CUSTOMER_ORDERS_07;
+
+SNAME           CNAME           ONUM
+--------------- --------------- -----
+Ankit           Mayukh          O1001
+Ankit           Iman            O1002
+Ayush           Souvagya        O1003
+Anushka         Aratrika        O1004
+Ankur           Rupayan         O1005
+
+
+
+4)
+CREATE VIEW VIEW4 AS
+SELECT SNUM, COMM
+FROM SALESPEOPLE_07
+WHERE COMM BETWEEN 1000 AND 2000
+WITH CHECK OPTION;
+
+SQL> INSERT INTO VIEW4 VALUES('S1006', 2000);
+
+1 row created.
+
+SQL> SELECT * FROM VIEW4;
+
+SNUM        COMM
+----- ----------
+S1006       2000
+
+
+SQL> SELECT * FROM SALESPEOPLE_07;
+
+SNUM  SNAME           CITY                       COMM
+----- --------------- -------------------- ----------
+S1001 Ayush           Kolkata                     200
+S1002 Sreyansh        Howrah                      500
+S1003 Ankit           Howrah                      350
+S1004 Anushka         Kolkata                     450
+S1005 Ankur           Kolkata                     400
+S1006                                            2000

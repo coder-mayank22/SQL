@@ -1,0 +1,283 @@
+CREATE TABLE ZIPCODES_07(
+	ZIP NUMBER(6) PRIMARY KEY,
+	CITY VARCHAR2(15));
+SQL> DESC ZIPCODES_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ZIP                                       NOT NULL NUMBER(6)
+ CITY                                               VARCHAR2(15)
+
+
+INSERT INTO ZIPCODES_07 VALUES(700060, 'Kolkata');
+INSERT INTO ZIPCODES_07 VALUES(400001, 'Mumbai');
+INSERT INTO ZIPCODES_07 VALUES(711101, 'Howrah');
+INSERT INTO ZIPCODES_07 VALUES(411002, 'Pune');
+INSERT INTO ZIPCODES_07 VALUES(560001, 'Bengaluru');
+
+SQL> SELECT * FROM ZIPCODES_07;
+
+       ZIP CITY
+---------- ---------------
+    700060 Kolkata
+    400001 Mumbai
+    711101 Howrah
+    411002 Pune
+    560001 Bengaluru
+
+
+
+CREATE TABLE EMPLOYEES_07(
+	ENO VARCHAR2(6) PRIMARY KEY,
+	ENAME VARCHAR2(15),
+	ZIP NUMBER(6) REFERENCES ZIPCODES_07(ZIP),
+	HDATE DATE);
+SQL> DESC EMPLOYEES_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ENO                                       NOT NULL VARCHAR2(6)
+ ENAME                                              VARCHAR2(15)
+ ZIP                                                NUMBER(6)
+ HDATE                                              DATE
+
+
+
+INSERT INTO EMPLOYEES_07 VALUES('E10001', 'Rakesh', 400001, '17-Dec-1980');
+INSERT INTO EMPLOYEES_07 VALUES('E10002', 'Aditya', 700060, '20-Feb-1981');
+INSERT INTO EMPLOYEES_07 VALUES('E10003', 'Srestha', 560001, '22-Feb-1981');
+INSERT INTO EMPLOYEES_07 VALUES('E10004', 'Jasprit', 400001, '2-Apr-1981');
+INSERT INTO EMPLOYEES_07 VALUES('E10005', 'Madhav', 411002, '8-Sep-1981');
+
+SQL> SELECT * FROM EMPLOYEES_07;
+
+ENO    ENAME                  ZIP HDATE
+------ --------------- ---------- ---------
+E10001 Rakesh              400001 17-DEC-80
+E10002 Aditya              700060 20-FEB-81
+E10003 Srestha             560001 22-FEB-81
+E10004 Jasprit             400001 02-APR-81
+E10005 Madhav              411002 08-SEP-81
+
+
+
+CREATE TABLE PARTS_07(
+	PNO VARCHAR2(6) PRIMARY KEY,
+	PNAME VARCHAR2(15),
+	QOH NUMBER(5),
+	PRICE NUMBER(5),
+	R_LEVEL NUMBER(4));
+SQL> DESC PARTS_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ PNO                                       NOT NULL VARCHAR2(6)
+ PNAME                                              VARCHAR2(15)
+ QOH                                                NUMBER(5)
+ PRICE                                              NUMBER()
+ R_LEVEL                                            NUMBER(4)
+
+
+
+INSERT INTO PARTS_07 VALUES('P10001', 'Screw', 12000, 5, 5000);
+INSERT INTO PARTS_07 VALUES('P10002', 'Headlight', 7000, 2500, 2000);
+INSERT INTO PARTS_07 VALUES('P10003', 'Windscreen', 2000, 1500, 1500);
+INSERT INTO PARTS_07 VALUES('P10004', 'Tires', 24000, 2000, 8000);
+INSERT INTO PARTS_07 VALUES('P10005', 'Valve', 8000, 500, 800);
+INSERT INTO PARTS_07 VALUES('P10006', 'Battery', 500, 21000, 100);
+
+SQL> SELECT * FROM PARTS_07;
+
+PNO    PNAME                  QOH      PRICE    R_LEVEL
+------ --------------- ---------- ---------- ----------
+P10001 Screw                12000          5       5000
+P10002 Headlight             7000       2500       2000
+P10003 Windscreen            2000       1500       1500
+P10004 Tires                24000       2000       8000
+P10005 Valve                 8000        500        800
+P10006 Battery                500      21000        100
+
+
+
+
+CREATE TABLE CUSTOMERS_07(
+	CNO VARCHAR2(6) PRIMARY KEY,
+	CNAME VARCHAR2(15),
+	STREET VARCHAR2(20),
+	ZIP NUMBER(6) REFERENCES ZIPCODES_07(ZIP),
+	PHONE NUMBER(10));
+SQL> DESC CUSTOMERS_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CNO                                       NOT NULL VARCHAR2(6)
+ CNAME                                              VARCHAR2(15)
+ STREET                                             VARCHAR2(20)
+ ZIP                                                NUMBER(6)
+ PHONE                                              NUMBER(10)
+
+
+
+INSERT INTO CUSTOMERS_07 VALUES('C10001', 'Abhinav', 'Gandhi Lane', 411002, 9123456389);
+INSERT INTO CUSTOMERS_07 VALUES('C10002', 'Anushka', 'Nehru Street', 700060, 8735267810);
+INSERT INTO CUSTOMERS_07 VALUES('C10003', 'Aditya', 'Rajaji Road', 400001, 6389674103);
+INSERT INTO CUSTOMERS_07 VALUES('C10004', 'Rajesh', 'Tagore Path', 711101, 8923761495);
+INSERT INTO CUSTOMERS_07 VALUES('C10005', 'Rohit', 'Vivekananda Marg', 700060, 9467239625);
+
+SQL> SELECT * FROM CUSTOMERS_07;
+
+CNO    CNAME           STREET                      ZIP      PHONE
+------ --------------- -------------------- ---------- ----------
+C10001 Abhinav         Gandhi Lane              411002 9123456389
+C10002 Anushka         Nehru Street             700060 8735267810
+C10003 Aditya          Rajaji Road              400001 6389674103
+C10004 Rajesh          Tagore Path              711101 8923761495
+C10005 Rohit           Vivekananda Marg         700060 9467239625
+
+
+
+
+CREATE TABLE ORDERS_07(
+	ONO VARCHAR2(6) PRIMARY KEY,
+	CNO VARCHAR2(6) REFERENCES CUSTOMERS_07(CNO),
+	ENO VARCHAR2(6) REFERENCES EMPLOYEES_07(ENO),
+	RECEIVED DATE,
+	SHIPPED DATE,
+	CONSTRAINT DATE_CONS CHECK(SHIPPED < RECEIVED));
+SQL> DESC ORDERS_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ONO                                       NOT NULL VARCHAR2(6)
+ CNO                                                VARCHAR2(6)
+ ENO                                                VARCHAR2(6)
+ RECEIVED                                           DATE
+ SHIPPED                                            DATE
+
+
+
+INSERT INTO ORDERS_07 VALUES('O10001', 'C10002', 'E10001', '16-Mar-2025', '14-Mar-2025');
+INSERT INTO ORDERS_07 VALUES('O10002', 'C10004', 'E10002', '6-Mar-2025', '3-Mar-2025');
+INSERT INTO ORDERS_07 VALUES('O10003', 'C10001', 'E10003', NULL, NULL);
+INSERT INTO ORDERS_07 VALUES('O10004', 'C10003', 'E10004', '12-Mar-2025', '11-Mar-2025');
+INSERT INTO ORDERS_07 VALUES('O10005', 'C10005', 'E10005', '18-Mar-2025', '14-Mar-2025');
+
+SQL> SELECT * FROM ORDERS_07;
+
+ONO    CNO    ENO    RECEIVED  SHIPPED
+------ ------ ------ --------- ---------
+O10001 C10002 E10001 16-MAR-25 14-MAR-25
+O10002 C10004 E10002 06-MAR-25 03-MAR-25
+O10003 C10001 E10003
+O10004 C10003 E10004 12-MAR-25 11-MAR-25
+O10005 C10005 E10005 18-MAR-25 14-MAR-25
+
+
+
+
+CREATE TABLE ODETAILS_07(
+	ONO VARCHAR2(6) REFERENCES ORDERS_07(ONO),
+	PNO VARCHAR2(6) REFERENCES PARTS_07(PNO),
+	QTY NUMBER(4),
+	PRIMARY KEY(ONO, PNO));
+SQL> DESC ODETAILS_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ONO                                       NOT NULL VARCHAR2(6)
+ PNO                                       NOT NULL VARCHAR2(6)
+ QTY                                                NUMBER(4)
+
+
+
+INSERT INTO ODETAILS_07 VALUES('O10001', 'P10001', 5000);
+INSERT INTO ODETAILS_07 VALUES('O10002', 'P10003', 300);
+INSERT INTO ODETAILS_07 VALUES('O10003', 'P10004', 1000);
+INSERT INTO ODETAILS_07 VALUES('O10004', 'P10005', 500);
+INSERT INTO ODETAILS_07 VALUES('O10005', 'P10001', 1200);
+
+SQL> SELECT * FROM ODETAILS_07;
+
+ONO    PNO           QTY
+------ ------ ----------
+O10001 P10001       5000
+O10002 P10003        300
+O10003 P10004       1000
+O10004 P10005        500
+O10005 P10001       1200
+
+
+
+a))
+SELECT PNO, PNAME FROM PARTS_07 WHERE PRICE < 20;
+PNO    PNAME
+------ ---------------
+P10001 Screw
+
+
+b))
+SELECT DISTINCT(PARTS_07.PNO) FROM ODETAILS_07, PARTS_07 WHERE PARTS_07.PNO = ODETAILS_07.PNO;
+PNO
+------
+P10001
+P10003
+P10004
+P10005
+P10001
+
+
+
+c))
+SELECT * FROM CUSTOMERS_07 WHERE CNAME LIKE 'S%';
+no rows selected
+
+
+d))
+SELECT ORDERS_07.ONO, CUSTOMERS_07.CNAME FROM ORDERS_07, CUSTOMERS_07 WHERE ORDERS_07.CNO = CUSTOMERS_07.CNO AND ORDERS_07.SHIPPED IS NULL;
+ONO    CNAME
+------ ---------------
+O10003 Abhinav
+
+
+e))
+SELECT CUSTOMERS_07.CNAME, EMPLOYEES_07.ENAME FROM CUSTOMERS_07, EMPLOYEES_07, ORDERS_07 WHERE CUSTOMERS_07.CNO = ORDERS_07.CNO AND EMPLOYEES_07.ENO = ORDERS_07.ENO;
+CNAME           ENAME
+--------------- ---------------
+Anushka         Rakesh
+Rajesh          Aditya
+Abhinav         Srestha
+Aditya          Jasprit
+Rohit           Madhav
+
+
+f))
+SELECT ENAME FROM EMPLOYEES_07 WHERE HDATE = (SELECT MIN(HDATE) FROM EMPLOYEES_07);
+ENAME
+---------------
+Rakesh
+
+
+g))
+SELECT PNO, PNAME, PRICE FROM PARTS_07 WHERE PRICE>20000 ORDER BY PNO ASC;
+PNO    PNAME                PRICE
+------ --------------- ----------
+P10006 Battery              21000
+
+
+h))
+SELECT P.PNO, P.PNAME, COALESCE(SUM(O.QTY), 0) AS TOTAL_SALES FROM PARTS_07 P LEFT JOIN ODETAILS_07 O ON P.PNO = O.PNO GROUP BY P.PNO, P.PNAME ORDER BY PNO ASC;
+PNO    PNAME           TOTAL_SALES
+------ --------------- -----------
+P10001 Screw                  6200
+P10002 Headlight                 0
+P10003 Windscreen              300
+P10004 Tires                  1000
+P10005 Valve                   500
+P10006 Battery                   0
+
+
+i))
+SELECT QTY FROM ODETAILS_07 WHERE PNO = '10601';
+no rows selected
+
+
+j))
+SELECT EMPLOYEES_07.ENO FROM EMPLOYEES_07, ZIPCODES_07 WHERE EMPLOYEES_07.ZIP = ZIPCODES_07.ZIP AND ZIPCODES_07.CITY = 'Mumbai';
+ENO
+------
+E10001
+E10004

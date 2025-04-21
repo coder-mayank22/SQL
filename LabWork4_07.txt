@@ -1,0 +1,278 @@
+CREATE TABLE SAILORS_07(
+	s_id Varchar2(8) PRIMARY KEY,
+	s_name Varchar2(10),
+	rating Number(2),
+	age Number(2));
+DESC SAILORS_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ S_ID                                      NOT NULL VARCHAR2(8)
+ S_NAME                                             VARCHAR2(10)
+ RATING                                             NUMBER(2)
+ AGE                                                NUMBER(2)
+
+
+
+CREATE TABLE BOATS_07(
+	b_id Varchar2(8) PRIMARY KEY,
+	b_name Varchar2(10),
+	color Varchar2(10));
+DESC BOATS_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ B_ID                                      NOT NULL VARCHAR2(8)
+ B_NAME                                             VARCHAR2(10)
+ COLOR                                              VARCHAR2(10)
+
+
+
+CREATE TABLE RESERVES_07(
+	s_id Varchar2(8) REFERENCES SAILORS_07(s_id),
+	b_id Varchar2(8) REFERENCES BOATS_07(b_id),
+	day Varchar2(10),
+	PRIMARY KEY(s_id, b_id));
+DESC RESERVES_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ S_ID                                      NOT NULL VARCHAR2(8)
+ B_ID                                      NOT NULL VARCHAR2(8)
+ DAY                                                VARCHAR2(10)
+
+
+
+
+INSERT INTO SAILORS_07 VALUES('S10001', 'John', 9, 28);
+INSERT INTO SAILORS_07 VALUES('S10002', 'Timmy', 8, 25);
+INSERT INTO SAILORS_07 VALUES('S10003', 'Allen', 10, 31);
+INSERT INTO SAILORS_07 VALUES('S10004', 'Walter', 7, 23);
+INSERT INTO SAILORS_07 VALUES('S10005', 'Jack', 8, 29);
+INSERT INTO SAILORS_07 VALUES('S10006', 'Tarun', 9, 28);
+
+SQL> SELECT * FROM SAILORS_07;
+
+S_ID     S_NAME         RATING        AGE
+-------- ---------- ---------- ----------
+S10001   John                9         28
+S10002   Timmy               8         25
+S10003   Allen              10         31
+S10004   Walter              7         23
+S10005   Jack                8         29
+S10006   Tarun               9         28
+
+
+
+
+INSERT INTO BOATS_07 VALUES('B10001', 'B1', 'Blue');
+INSERT INTO BOATS_07 VALUES('B10002', 'B2', 'Red');
+INSERT INTO BOATS_07 VALUES('B10003', 'B3', 'Red');
+INSERT INTO BOATS_07 VALUES('B10004', 'B4', 'Orange');
+INSERT INTO BOATS_07 VALUES('B10005', 'B5', 'Green');
+
+SQL> SELECT * FROM BOATS_07;
+
+B_ID     B_NAME     COLOR
+-------- ---------- ----------
+B10001   B1         Blue
+B10002   B2         Red
+B10003   B3         Red
+B10004   B4         Orange
+B10005   B5         Green
+
+
+
+
+INSERT INTO RESERVES_07 VALUES('S10001', 'B10002', 'Monday');
+INSERT INTO RESERVES_07 VALUES('S10002', 'B10001', 'Wednesday');
+INSERT INTO RESERVES_07 VALUES('S10003', 'B10004', 'Monday');
+INSERT INTO RESERVES_07 VALUES('S10004', 'B10001', 'Friday');
+INSERT INTO RESERVES_07 VALUES('S10005', 'B10003', 'Tuesday');
+INSERT INTO RESERVES_07 VALUES('S10006', 'B10005', 'Thursday');
+
+SQL> SELECT * FROM RESERVES_07;
+
+S_ID     B_ID     DAY
+-------- -------- ----------
+S10001   B10002   Monday
+S10002   B10001   Wednesday
+S10003   B10004   Monday
+S10004   B10001   Friday
+S10005   B10003   Tuesday
+S10006   B10005   Thursday
+
+
+
+
+
+SELECT BOATS_07.color FROM BOATS_07, SAILORS_07, RESERVES_07 WHERE SAILORS_07.s_name = 'Tarun' AND SAILORS_07.s_id = RESERVES_07.s_id AND RESERVES_07.b_id = BOATS_07.b_id;
+COLOR
+----------
+Green
+
+
+
+SELECT SAILORS_07.s_id, SAILORS_07.s_name FROM SAILORS_07, RESERVES_07 WHERE SAILORS_07.s_id = RESERVES_07.s_id AND RESERVES_07.day = 'Monday';
+S_ID     S_NAME
+-------- ----------
+S10001   John
+S10003   Allen
+
+
+DELETE FROM SAILORS_07 WHERE age>60;
+0 rows deleted.
+
+
+
+CREATE TABLE TEACHER_07(
+	TID VARCHAR2(8) PRIMARY KEY,
+	NAME VARCHAR2(10),
+	DEPT VARCHAR2(10));
+DESC TEACHER_07;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- ------------------------------
+ TID                                                                                 NOT NULL VARCHAR2(8)
+ NAME                                                                                         VARCHAR2(10)
+ DEPT                                                                                         VARCHAR2(10)
+
+
+
+
+CREATE TABLE SUBJECT_07(
+	SUBNO NUMBER(2) PRIMARY KEY,
+	SUBTITLE VARCHAR2(20));
+DESC SUBJECT_07;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- ------------------------------
+ SUBNO                                                                               NOT NULL NUMBER(2)
+ SUBTITLE                                                                                     VARCHAR2(20)
+
+
+
+
+CREATE TABLE TAUGHTBY_07(
+	TID VARCHAR2(8) REFERENCES TEACHER_07(TID),
+	SUBNO NUMBER(2) REFERENCES SUBJECT_07(SUBNO));
+DESC TAUGHTBY_07;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- ------------------------------
+ TID                                                                                          VARCHAR2(8)
+ SUBNO                                                                                        NUMBER(2)
+
+
+
+
+CREATE TABLE STUDENT_07(
+	ROLLNO NUMBER(2) PRIMARY KEY,
+	SNAME VARCHAR2(10),
+	CITY VARCHAR2(15));
+DESC STUDENT_07;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- ------------------------------
+ ROLLNO                                                                              NOT NULL NUMBER(2)
+ SNAME                                                                                        VARCHAR2(10)
+ CITY                                                                                         VARCHAR2(15)
+
+
+
+INSERT INTO TEACHER_07 VALUES('T10001', 'SoM', 'Physics');
+INSERT INTO TEACHER_07 VALUES('T10002', 'SC', 'Chemistry');
+INSERT INTO TEACHER_07 VALUES('T10003', 'KB', 'Humanities');
+INSERT INTO TEACHER_07 VALUES('T10004', 'SSK', 'CSE');
+INSERT INTO TEACHER_07 VALUES('T10005', 'ABj', 'Maths');
+
+SQL> SELECT * FROM TEACHER_07;
+
+TID      NAME       DEPT
+-------- ---------- ----------
+T10001   SoM        Physics
+T10002   SC         Chemistry
+T10003   KB         Humanities
+T10004   SSK        CSE
+T10005   ABj        Maths
+
+
+
+
+INSERT INTO SUBJECT_07 VALUES(1, 'Maths');
+INSERT INTO SUBJECT_07 VALUES(2, 'Thermodynamics');
+INSERT INTO SUBJECT_07 VALUES(3, 'Organic Chemistry');
+INSERT INTO SUBJECT_07 VALUES(4, 'DBMS');
+INSERT INTO SUBJECT_07 VALUES(5, 'English');
+
+SQL> SELECT * FROM SUBJECT_07;
+
+     SUBNO SUBTITLE
+---------- ----------
+         1 Maths
+         2 Thermodynamics
+         3 Organic Chemistry
+         4 DBMS
+         5 English
+
+
+INSERT INTO TAUGHTBY_07 VALUES('T10001', 2);
+INSERT INTO TAUGHTBY_07 VALUES('T10002', 3);
+INSERT INTO TAUGHTBY_07 VALUES('T10003', 5);
+INSERT INTO TAUGHTBY_07 VALUES('T10004', 4);
+INSERT INTO TAUGHTBY_07 VALUES('T10005', 1);
+
+SQL> SELECT * FROM TAUGHTBY_07;
+
+TID           SUBNO
+-------- ----------
+T10001            2
+T10002            3
+T10003            5
+T10004            4
+T10005            1
+
+
+
+INSERT INTO STUDENT_07 VALUES(6, 'Rahul', 'Kolkata');
+INSERT INTO STUDENT_07 VALUES(7, 'Gaurav', 'Howrah');
+INSERT INTO STUDENT_07 VALUES(8, 'Aditya', 'Kolkata');
+INSERT INTO STUDENT_07 VALUES(9, 'Srestha', 'Kolkata');
+INSERT INTO STUDENT_07 VALUES(10, 'Anushka', 'Murshidabad');
+
+    ROLLNO SNAME      CITY
+---------- ---------- ---------------
+         6 Rahul      Kolkata
+         7 Gaurav     Howrah
+         8 Aditya     Kolkata
+         9 Srestha    Kolkata
+        10 Anushka    Murshidabad
+
+
+a))
+SELECT TEACHER_07.NAME FROM TEACHER_07, TAUGHTBY_07, SUBJECT_07 WHERE TEACHER_07.TID = TAUGHTBY_07.TID AND TAUGHTBY_07.SUBNO = SUBJECT_07.SUBNO AND TEACHER_07.DEPT = 'Physics' AND SUBJECT_07.SUBTITLE = 'Thermodynamics';
+
+NAME
+----------
+SoM
+
+
+b))
+UPDATE SUBJECT_07 SET SUBTITLE = 'RDBMS' WHERE SUBTITLE = 'DBMS';
+
+SQL> SELECT * FROM SUBJECT_07;
+
+     SUBNO SUBTITLE
+---------- --------------------
+         1 Maths
+         2 Thermodynamics
+         3 Organic Chemistry
+         4 RDBMS
+         5 English
+
+c))
+SELECT * FROM STUDENT_07 WHERE CITY = 'Kolkata' AND ROLLNO BETWEEN 20 AND 25;
+no rows selected
+
+
+d))
+SELECT * FROM STUDENT_07 WHERE CITY = 'Kolkata' ORDER BY ROLLNO DESC;
+
+    ROLLNO SNAME      CITY
+---------- ---------- ---------------
+         9 Srestha    Kolkata
+         8 Aditya     Kolkata
+         6 Rahul      Kolkata

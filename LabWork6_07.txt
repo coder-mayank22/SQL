@@ -1,0 +1,99 @@
+CREATE TABLE CUSTOMERS_07(
+	CUSTOMER_ID NUMBER(1) PRIMARY KEY,
+	CUSTOMER_NAME VARCHAR2(20),
+	CONTACT_NAME VARCHAR2(20),
+	ADDRESS VARCHAR2(30),
+	CITY VARCHAR2(15),
+	POSTAL_CODE NUMBER(5),
+	COUNTRY VARCHAR2(10));
+SQL> DESC CUSTOMERS_07;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                               NOT NULL NUMBER(1)
+ CUSTOMER_NAME                                      VARCHAR2(20)
+ CONTACT_NAME                                       VARCHAR2(20)
+ ADDRESS                                            VARCHAR2(30)
+ CITY                                               VARCHAR2(15)
+ POSTAL_CODE                                        NUMBER(5)
+ COUNTRY                                            VARCHAR2(10)
+
+
+
+INSERT INTO CUSTOMERS_07 VALUES(1, 'Alfreds Futter', 'Maria Anders', 'Obere Str. 57', 'Berlin', 12209, 'Germany');
+INSERT INTO CUSTOMERS_07 VALUES(2, 'Ana Helados', 'Ana Trujillo', 'Avda. Construction 2222', 'Mexico D.F', 05021, 'Mexico');
+INSERT INTO CUSTOMERS_07 VALUES(3, 'Antonio Moreno', 'Antonio Moreno', 'Mataderos 2312', 'Mexico D.F', 05023, 'Mexico');
+
+
+
+
+CREATE TABLE SUPPLIERS_07(
+	SUPPLIER_ID NUMBER(1) PRIMARY KEY,
+	SUPPLIER_NAME VARCHAR2(30),
+	CONTACT_NAME VARCHAR2(20),
+	ADDRESS VARCHAR2(30),
+	CITY VARCHAR2(15),
+	POSTAL_CODE NUMBER(5),
+	COUNTRY VARCHAR2(10));
+SQL> DESC SUPPLIERS_07;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ SUPPLIER_ID                                           NOT NULL NUMBER(1)
+ SUPPLIER_NAME                                                  VARCHAR2(30)
+ CONTACT_NAME                                                   VARCHAR2(20)
+ ADDRESS                                                        VARCHAR2(30)
+ CITY                                                           VARCHAR2(15)
+ POSTAL_CODE                                                    NUMBER(5)
+ COUNTRY                                                        VARCHAR2(10)
+
+
+
+
+INSERT INTO SUPPLIERS_07 VALUES(1, 'Exotic Liquid', 'Charlotte Cooper', '49 Gilbert St.', 'Berlin', 12209, 'Germany');
+INSERT INTO SUPPLIERS_07 VALUES(2, 'New Orleans Cajun Delights', 'Shelley Burke', 'P.O. Box 78394', 'Mexico D.F', 05023, 'Mexico');
+INSERT INTO SUPPLIERS_07 VALUES(3, 'Grandma Kellys Homestead', 'Regina Murphy', '707 Oxford Rd.', 'Ann Arbor', 48104, 'USA');
+
+
+
+
+a))
+SELECT DISTINCT CITY FROM CUSTOMERS_07 UNION SELECT DISTINCT CITY FROM SUPPLIERS_07;
+CITY
+---------------
+Ann Arbor
+Berlin
+Mexico D.F
+
+
+b))
+SELECT CITY FROM CUSTOMERS_07 UNION ALL SELECT CITY FROM SUPPLIERS_07;
+CITY
+---------------
+Berlin
+Mexico D.F
+Mexico D.F
+Berlin
+Mexico D.F
+Ann Arbor
+
+
+c))
+SELECT CITY FROM CUSTOMERS_07 WHERE COUNTRY = 'Germany' UNION SELECT CITY FROM SUPPLIERS_07 WHERE COUNTRY = 'Germany';
+CITY
+---------------
+Berlin
+
+
+d))
+SELECT C.CUSTOMER_NAME, S.SUPPLIER_NAME FROM CUSTOMERS_07 C, SUPPLIERS_07 S WHERE C.CITY = S.CITY;
+CUSTOMER_NAME        SUPPLIER_NAME
+-------------------- ------------------------------
+Alfreds Futter       Exotic Liquid
+Ana Helados          New Orleans Cajun Delights
+Antonio Moreno       New Orleans Cajun Delights
+
+
+e))
+SELECT COUNTRY FROM SUPPLIERS_07 MINUS SELECT COUNTRY FROM CUSTOMERS_07;
+COUNTRY
+----------
+USA
